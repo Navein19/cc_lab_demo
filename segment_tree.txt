@@ -1,0 +1,91 @@
+void build(vector<int>& segment_tree,vector<int> arr,int low, int high ,int index)
+{
+    if(low==high)
+    {
+        segment_tree[index]=arr[low];
+    }
+    
+    else
+    {
+        int mid=(low+high)/2;
+        
+        build(segment_tree,arr,low,mid,2*index+1);
+        build(segment_tree,arr,mid+1,high,2*index+2);
+        segment_tree[index] = min(segment_tree[2*index+1],segment_tree[2*index+2]);
+    }
+}
+
+int min_query(vector<int> segment_tree , int low , int high , int lrange , int rrange, int index)
+{
+    //no overlap condition
+    if(high<lrange || low>rrange)
+        return INT_MAX;
+    
+    // complete overlap
+    else if(low>=lrange && high<=rrange)
+        return segment_tree[index];
+        
+    // partial overlap
+    else{
+        int mid=(low+high)/2;
+    
+    int option1 = min_query(segment_tree,low,mid,lrange,rrange,2*index+1);
+    int option2 = min_query(segment_tree,mid+1,high,lrange,rrange,2*index+2);
+    
+    return min(option1,option2);
+    }
+}
+
+
+int update_query(vector<int>& segment_tree,vector<int>& array, int low , int high , int lrange , int rrange, int index,int delta)
+{
+    //no overlap condition
+    if(high<lrange || low>rrange)
+        return INT_MAX;
+    
+    else if(low==high)
+    {
+        segment_tree[index]+=delta;
+        array[low]+=delta;
+        return array[low];
+    }
+    
+        
+    // partial or complete overlap
+    else{
+        int mid=(low+high)/2;
+    
+        int option1 = update_query(segment_tree,array,low,mid,lrange,rrange,2*index+1,delta);
+        int option2 = update_query(segment_tree,array,mid+1,high,lrange,rrange,2*index+2,delta);
+        segment_tree[index]=min(option1,option2);
+        return segment_tree[index];
+        }
+}
+
+int update_using_lazy
+
+int main() {
+    vector<int> arr={4,5,1,-1,0,3,5,-3,9};
+    vector<int> segment_tree(2*arr.size()-1);
+    
+    build(segment_tree,arr,0,arr.size()-1,0);
+    
+    for(int i=0;i<segment_tree.size();i++)
+        cout<<segment_tree[i]<<" ";
+    cout<<endl;
+    
+    int lrange=2,rrange=7;
+    
+    cout<<min_query(segment_tree,0,arr.size()-1,lrange,rrange,0)<<endl;
+    
+    int up = update_query(segment_tree,arr,0,arr.size()-1,lrange,rrange,0,2);
+    
+    for(int i=0;i<arr.size();i++)
+        cout<<arr[i]<<" ";
+    cout<<endl;
+    
+
+    return 0;    
+    
+}
+
